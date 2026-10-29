@@ -1,7 +1,7 @@
 /* TAsF – UI strings. Default English, Spanish available via the EN/ES toggle. */
 window.TASF_I18N = {
   en: {
-    brandSub: 'Travel and Surf', protoBadge: 'Prototype',
+    brandSub: 'Travel and Surf', protoBadge: 'Prototype', homeLink: '← Home',
     mapHint: 'Scroll / pinch to zoom down to street level · drag to pan · click a spot for details', mapOffline: 'Map tiles unavailable (offline): showing a simple world outline',
     legendTitle: 'Season for your trip', r3: 'Peak season', r2: 'Shoulder season', r1: 'Surfable', r0: 'Not surfable / no fit',
     legendWave: 'Has a wave you picked',
@@ -67,10 +67,28 @@ window.TASF_I18N = {
     rsFc: { good: r => `Forecast looks good for your dates (${r}/5)`, ok: r => `Forecast is average for your dates (${r}/5)`, poor: r => `Forecast looks weak for your dates (${r}/5)` },
     wdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     compass: ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'],
+    // flights & stays (Plan my trip)
+    tvTitle: 'Flights & stays', tvNotLive: 'PROTOTYPE · prices are not live. TAsF does not show any price, airline, flight or hotel here: the buttons open real searches on comparison sites with your route, dates and budget already filled in, and those sites show the live prices.',
+    tvFrom: 'Flying from', tvTravellers: 'Travellers', tvDatesFixed: (a, b, n) => `Your dates: ${a} → ${b} (${n} nights)`,
+    tvDatesSuggested: (a, b, n, m) => `Suggested dates: ${a} → ${b} (${n} nights), in ${m}, one of the best months for you. Change them on the booking site if you like.`,
+    tvFlights: 'Flights', tvAirport: 'Nearest airport', tvAirportAlt: 'Alternatives', tvRoute: (o, d) => `${o} → ${d}, return`,
+    tvFlightEst: (h, s) => `Typical door-to-door time ~${h} h, ${s} (rough estimate from distance, not a schedule)`,
+    tvStops: { none: 'probably no flight needed (drive or train)', direct1: 'often direct or 1 stop', one: 'usually 1 stop', oneTwo: 'usually 1–2 stops' },
+    tvNoFlight: 'You are already close: drive or take the train. Flight links are shown anyway.',
+    tvSearchOn: 'Search on', tvSameAirport: 'Same airport as your departure city: no flight needed.',
+    tvStays: 'Where to stay', tvArea: 'Area', tvBudgetHow: 'How we get your stay budget',
+    tvBudgetLines: b => [`Your budget: €${b.total.toLocaleString()} per person, whole trip`, `− flight estimate €${b.flight.toLocaleString()} per person (middle of our rough €${b.flightLo}–${b.flightHi} band for this distance)`, `= €${Math.max(0, b.left).toLocaleString()} left for the trip on the ground; we keep ${Math.round(b.share * 100)}% for accommodation (the rest: food, surf, transport)`, `÷ ${b.nights} nights = ~€${b.ppNight} per person per night`],
+    tvBudgetLow: 'The flight estimate uses up most of your budget, so we don’t set a price filter. Raise the budget or set your own maximum below.',
+    tvMaxNight: 'Max per night, whole group (€)', tvMaxHint: n => `Suggested: €${n} (per person per night × travellers). Change it and the links update.`,
+    tvTypes: 'Types of stay that fit this trip', tvTypesNote: 'Categories only: we don’t recommend specific properties yet.',
+    tvType: { camp: 'Surf camp (lessons, board & shared meals)', hostel: 'Surf hostel (budget, social)', villa: 'Villa / surf house to share', resort: 'Surf resort (boat access, all-in)', boutique: 'Boutique hotel or guesthouse', apartment: 'Apartment / holiday rental', charter: 'Boat trip (surf charter)' },
+    tvFindCamps: 'Find surf camps ↗', tvFindHostels: 'Find surf hostels ↗', tvFindCharter: 'Find surf charters ↗',
+    tvLive: (s, d) => `Live offers from ${s} · ${d}`, tvLiveErr: 'Live offers could not be loaded; use the search links.',
+    tvLiveFlights: 'Live flight offers', tvLiveStays: 'Live stay offers', tvTotal: 'total', tvPerNight: 'per night', tvStopsN: n => n === 0 ? 'direct' : `${n} stop${n > 1 ? 's' : ''}`,
     locale: 'en-GB'
   },
   es: {
-    brandSub: 'Travel and Surf', protoBadge: 'Prototipo',
+    brandSub: 'Travel and Surf', protoBadge: 'Prototipo', homeLink: '← Inicio',
     mapHint: 'Rueda / pellizca para acercarte hasta nivel de calle · arrastra para mover · haz clic en un spot para ver detalles', mapOffline: 'Mapa base no disponible (sin conexión): se muestra un contorno simple del mundo',
     legendTitle: 'Temporada para tu viaje', r3: 'Temporada alta', r2: 'Temporada media', r1: 'Surfeable', r0: 'No surfeable / no encaja',
     legendWave: 'Tiene una ola que elegiste',
@@ -127,6 +145,23 @@ window.TASF_I18N = {
     rsFc: { good: r => `La previsión pinta bien para tus fechas (${r}/5)`, ok: r => `Previsión normalita para tus fechas (${r}/5)`, poor: r => `La previsión pinta floja para tus fechas (${r}/5)` },
     wdays: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
     compass: ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO'],
+    tvTitle: 'Vuelos y alojamiento', tvNotLive: 'PROTOTIPO · los precios no son en tiempo real. TAsF no muestra aquí ningún precio, aerolínea, vuelo ni hotel: los botones abren búsquedas reales en comparadores con tu ruta, fechas y presupuesto ya rellenados, y son esas webs las que muestran los precios reales.',
+    tvFrom: 'Sales desde', tvTravellers: 'Viajeros', tvDatesFixed: (a, b, n) => `Tus fechas: ${a} → ${b} (${n} noches)`,
+    tvDatesSuggested: (a, b, n, m) => `Fechas sugeridas: ${a} → ${b} (${n} noches), en ${m}, uno de los mejores meses para ti. Puedes cambiarlas en la web de reserva.`,
+    tvFlights: 'Vuelos', tvAirport: 'Aeropuerto más cercano', tvAirportAlt: 'Alternativas', tvRoute: (o, d) => `${o} → ${d}, ida y vuelta`,
+    tvFlightEst: (h, s) => `Tiempo puerta a puerta típico ~${h} h, ${s} (estimación aproximada por distancia, no es un horario)`,
+    tvStops: { none: 'probablemente no hace falta volar (coche o tren)', direct1: 'a menudo directo o con 1 escala', one: 'normalmente 1 escala', oneTwo: 'normalmente 1–2 escalas' },
+    tvNoFlight: 'Estás cerca: mejor en coche o tren. Aun así te dejamos los enlaces de vuelos.',
+    tvSearchOn: 'Buscar en', tvSameAirport: 'Es el mismo aeropuerto que tu ciudad de salida: no hace falta volar.',
+    tvStays: 'Dónde alojarse', tvArea: 'Zona', tvBudgetHow: 'Cómo calculamos tu presupuesto de alojamiento',
+    tvBudgetLines: b => [`Tu presupuesto: ${b.total.toLocaleString('es-ES')} € por persona, viaje completo`, `− vuelo estimado ${b.flight.toLocaleString('es-ES')} € por persona (punto medio de nuestra horquilla aproximada de ${b.flightLo}–${b.flightHi} € para esta distancia)`, `= ${Math.max(0, b.left).toLocaleString('es-ES')} € para el viaje en destino; reservamos el ${Math.round(b.share * 100)} % para alojamiento (el resto: comida, surf, transporte)`, `÷ ${b.nights} noches = ~${b.ppNight} € por persona y noche`],
+    tvBudgetLow: 'El vuelo estimado se come casi todo el presupuesto, así que no ponemos filtro de precio. Sube el presupuesto o pon tu propio máximo abajo.',
+    tvMaxNight: 'Máximo por noche, todo el grupo (€)', tvMaxHint: n => `Sugerido: ${n} € (por persona y noche × viajeros). Cámbialo y los enlaces se actualizan.`,
+    tvTypes: 'Tipos de alojamiento que encajan con este viaje', tvTypesNote: 'Solo categorías: todavía no recomendamos alojamientos concretos.',
+    tvType: { camp: 'Surf camp (clases, tabla y comidas compartidas)', hostel: 'Surf hostel (económico y social)', villa: 'Villa / surf house para compartir', resort: 'Surf resort (acceso en barco, todo incluido)', boutique: 'Hotel boutique o casa de huéspedes', apartment: 'Apartamento / alquiler vacacional', charter: 'Viaje en barco (surf charter)' },
+    tvFindCamps: 'Buscar surf camps ↗', tvFindHostels: 'Buscar surf hostels ↗', tvFindCharter: 'Buscar surf charters ↗',
+    tvLive: (s, d) => `Ofertas en tiempo real de ${s} · ${d}`, tvLiveErr: 'No se han podido cargar las ofertas en tiempo real; usa los enlaces de búsqueda.',
+    tvLiveFlights: 'Vuelos en tiempo real', tvLiveStays: 'Alojamientos en tiempo real', tvTotal: 'total', tvPerNight: 'por noche', tvStopsN: n => n === 0 ? 'directo' : `${n} escala${n > 1 ? 's' : ''}`,
     locale: 'es-ES'
   }
 };

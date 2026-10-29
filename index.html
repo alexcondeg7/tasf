@@ -3,82 +3,140 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TAsF – Travel and Surf · Plan your surf trip</title>
-  <meta name="description" content="TAsF – Travel and Surf. AI-assisted surf trip planner (prototype)." />
+  <title>TAsF – Travel and Surf · Surf trips around the world</title>
+  <meta name="description" content="TAsF – Travel and Surf. Surf trips organised in person, and an AI trip planner that matches waves to your dates, level and budget (prototype)." />
   <link rel="icon" type="image/png" href="assets/tasf-logo.png" />
-  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="landing.css" />
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="TAsF – Travel and Surf">
-      <img class="brand-logo" src="assets/tasf-logo.png" alt="TAsF" />
-      <span class="brand-sub" data-i18n="brandSub">Travel and Surf</span>
-    </a>
-    <div class="topbar-right">
-      <span class="proto-badge" data-i18n="protoBadge">Prototype</span>
-      <div class="lang" role="group" aria-label="Language">
-        <button data-lang="en" class="active">EN</button>
-        <button data-lang="es">ES</button>
-      </div>
+  <header class="nav" id="top">
+    <a class="nav-brand" href="#top" aria-label="TAsF – Travel and Surf"><img src="assets/tasf-logo-white.png" alt="TAsF" /><span data-i18n="brandSub">Travel and Surf</span></a>
+    <nav class="nav-links" id="navLinks" aria-label="Main">
+      <a href="#concept" data-i18n="navConcept">Concept</a>
+      <a href="#how" data-i18n="navHow">How it works</a>
+      <a href="#levels" data-i18n="navLevels">Levels</a>
+      <a href="#trips" data-i18n="navTrips">Trips</a>
+      <a href="#destinations" data-i18n="navDest">Destinations</a>
+      <a href="#contact" data-i18n="navContact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang" role="group" aria-label="Language"><button data-lang="en">EN</button><button data-lang="es">ES</button></div>
+      <a class="btn-y" href="app/index.html" data-i18n="ctaPlan">Plan your trip</a>
+      <button class="nav-burger" id="navBurger" aria-expanded="false" aria-controls="navLinks" aria-label="Menu"><span></span><span></span></button>
     </div>
   </header>
 
-  <main class="layout">
-    <section class="map-wrap" aria-label="World surf map">
-      <div class="map-hint" id="mapHint" data-i18n="mapHint">Scroll / pinch to zoom · drag to pan · hover a spot for details</div>
-      <div id="map" role="region" aria-label="World map of surf destinations"></div>
-      <div class="map-note" id="mapNote" data-i18n="mapOffline" hidden>Map tiles unavailable (offline): showing a simple world outline</div>
-      <div class="map-controls">
-        <button id="zoomIn" aria-label="Zoom in">+</button>
-        <button id="zoomOut" aria-label="Zoom out">−</button>
-        <button id="zoomReset" aria-label="Reset zoom">⟲</button>
+  <main>
+    <section class="hero">
+      <div class="hero-bg" role="img" aria-label="Surfer riding a wave at sunset (AI-generated illustration)"></div>
+      <div class="hero-in wrap">
+        <p class="eyebrow" data-i18n="heroEyebrow">Travel and surf</p>
+        <h1 data-i18n="heroTitle">Surf the world</h1>
+        <p class="hero-sub" data-i18n="heroSub">Surf trips organised in person by surfers, plus an AI planner that matches the waves to your dates, your level and your budget.</p>
+        <div class="hero-cta"><a class="btn-y lg" href="app/index.html" data-i18n="ctaPlan">Plan your trip</a><a class="btn-o lg" href="#how" data-i18n="ctaHow">How it works</a></div>
       </div>
-      <div class="legend" id="legend">
-        <button class="legend-toggle" id="legendToggle" aria-expanded="true" aria-controls="legendBody"><span class="lt-dots" aria-hidden="true"><i class="sw r3"></i><i class="sw r2"></i><i class="sw r1"></i><i class="sw r0"></i></span><span class="lt-label" data-i18n="legendBtn">Legend</span></button>
-        <div class="legend-body" id="legendBody">
-        <div class="legend-title" data-i18n="legendTitle">Season for your trip</div>
-        <div class="legend-row"><span class="sw r3"></span><span data-i18n="r3">Peak season</span></div>
-        <div class="legend-row"><span class="sw r2"></span><span data-i18n="r2">Shoulder season</span></div>
-        <div class="legend-row"><span class="sw r1"></span><span data-i18n="r1">Surfable</span></div>
-        <div class="legend-row"><span class="sw r0"></span><span data-i18n="r0">Not surfable / no fit</span></div>
-        <div class="legend-row small" id="legendWaves" hidden><span class="sw ring"></span><span data-i18n="legendWave">Has a wave you picked</span></div>
-        </div>
-      </div>
-      <div class="tooltip" id="tooltip" hidden></div>
-      <div class="dest-card" id="destCard" hidden></div>
     </section>
 
-    <aside class="panel" aria-label="Trip planner">
-      <nav class="stepper" id="stepper" aria-label="Steps"></nav>
-      <div class="step-body" id="stepBody"></div>
-      <div class="step-nav">
-        <button class="btn ghost" id="backBtn" data-i18n="back">Back</button>
-        <div class="match-count" id="matchCount"></div>
-        <button class="btn primary" id="nextBtn" data-i18n="next">Next</button>
+    <section class="signup">
+      <div class="wrap signup-in">
+        <h2 data-i18n="signupTitle">Sign up to stay informed</h2>
+        <form id="signup" class="signup-form" novalidate>
+          <label class="sr" for="email" data-i18n="signupLabel">Email</label>
+          <input id="email" type="email" autocomplete="email" data-i18n-ph="signupPh" placeholder="your@email.com" />
+          <button class="btn-y" type="submit" data-i18n="signupBtn">Keep me posted</button>
+        </form>
+        <p class="signup-note" id="signupNote" data-i18n="signupNote">Prototype: this form is not connected yet. Nothing you type is sent or stored.</p>
       </div>
-    </aside>
+    </section>
+
+    <section class="sec sand" id="concept">
+      <div class="wrap">
+        <p class="eyebrow dark" data-i18n="conceptEyebrow">The concept</p>
+        <h2 class="big" data-i18n="conceptTitle">Two ways to get to your next wave</h2>
+        <div class="split">
+          <article class="split-card">
+            <div class="img" style="background-image:url(assets/img/crew.jpg)" role="img" aria-label="Friends walking to the sea with surfboards (AI-generated illustration)"></div>
+            <h3 data-i18n="c1Title">Organised in person</h3>
+            <p data-i18n="c1Text">Tell a TAsF surf guide what you want and we organise the trip with you: destination, dates, flights, where to stay, boards, coaching and the plan for flat days.</p>
+          </article>
+          <article class="split-card">
+            <div class="img" style="background-image:url(assets/img/reef.jpg)" role="img" aria-label="Swell lines wrapping around a reef island (AI-generated illustration)"></div>
+            <h3 data-i18n="c2Title">Planned with AI</h3>
+            <p data-i18n="c2Text">Answer a few questions and the world map lights up with the places that work for you. You get a top 5, a 7-day surf forecast, a sample itinerary and ready-made flight and stay searches.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec navy" id="how">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="howEyebrow">How the planner works</p>
+        <h2 class="big" data-i18n="howTitle">Six questions, one map</h2>
+        <div class="steps" id="howList"></div>
+        <a class="btn-y" href="app/index.html" data-i18n="ctaTry">Try the planner</a>
+      </div>
+    </section>
+
+    <section class="sec light" id="levels">
+      <div class="wrap">
+        <p class="eyebrow dark" data-i18n="levelsEyebrow">Surf levels</p>
+        <h2 class="big" data-i18n="levelsTitle">From your first wave to competition</h2>
+        <p class="lead" data-i18n="levelsLead">TAsF uses its own 8-step scale. Pick the one that sounds like you and the map greys out spots that are too heavy and marks down the ones that would feel too easy.</p>
+        <div class="levels" id="levelGrid"></div>
+      </div>
+    </section>
+
+    <section class="sec navy" id="trips">
+      <div class="wrap">
+        <p class="eyebrow" data-i18n="tripsEyebrow">Trip types</p>
+        <h2 class="big" data-i18n="tripsTitle">What kind of trip is it?</h2>
+      </div>
+      <div class="strip" id="tripStrip"></div>
+    </section>
+
+    <section class="sec sand" id="destinations">
+      <div class="wrap">
+        <p class="eyebrow dark" data-i18n="destEyebrow">Destinations</p>
+        <h2 class="big" id="destTitle">Some of our destinations</h2>
+        <p class="lead" data-i18n="destLead">Season, level and wave data are approximate general guidance, and we are checking them with surfers who know each spot.</p>
+        <div class="dests" id="destGrid"></div>
+        <a class="btn-d" href="app/index.html" data-i18n="ctaMap">See them all on the map</a>
+      </div>
+    </section>
+
+    <section class="sec light" id="why">
+      <div class="wrap">
+        <p class="eyebrow dark" data-i18n="whyEyebrow">Why TAsF</p>
+        <h2 class="big" data-i18n="whyTitle">More reasons to plan with us</h2>
+        <div class="why" id="whyList"></div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="wrap">
+        <h2 data-i18n="bandTitle">Find your wave</h2>
+        <a class="btn-y lg" href="app/index.html" data-i18n="ctaPlan">Plan your trip</a>
+      </div>
+    </section>
   </main>
 
-  <div class="modal" id="modal" hidden>
-    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
-      <div id="modalContent"></div>
+  <footer class="foot" id="contact">
+    <div class="wrap foot-top">
+      <img src="assets/tasf-logo-white.png" alt="TAsF – Travel and Surf" class="foot-logo" />
     </div>
-  </div>
+    <div class="wrap foot-cols">
+      <div><h4 data-i18n="fPlan">Plan</h4><a href="app/index.html" data-i18n="ctaPlan">Plan your trip</a><a href="#how" data-i18n="navHow">How it works</a><a href="#levels" data-i18n="navLevels">Levels</a></div>
+      <div><h4 data-i18n="fContact">Contact</h4><span class="todo" data-i18n="fContactTodo">TODO: TAsF email, phone and social links</span></div>
+      <div><h4 data-i18n="fLegal">Legal</h4><span class="todo" data-i18n="fPrivacy">Privacy policy (TODO)</span><span class="todo" data-i18n="fLegalNotice">Legal notice (TODO)</span><span class="todo" data-i18n="fCookies">Cookie policy (TODO)</span></div>
+    </div>
+    <div class="wrap foot-bottom"><span data-i18n="fCopy">TAsF – Travel and Surf · Prototype</span><span data-i18n="fImages">Photos on this page are AI-generated illustrations.</span></div>
+  </footer>
 
-  <!-- Vendored locally so the prototype works offline -->
-  <!-- Leaflet 1.9.4 (BSD-2-Clause, vendor/leaflet/LICENSE.txt). Base map tiles are loaded from CARTO on demand;
-       offline, the vector outline in land-50m.js is shown instead. -->
-  <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="vendor/topojson-client.min.js"></script>
-  <script src="vendor/land-50m.js"></script>
   <script src="data.js"></script>
   <script src="i18n.js"></script>
-  <script src="planner.js"></script>
-  <!-- Surf forecast: generated daily by scripts/update_forecast.py (works from file:// too). Missing file = "forecast unavailable". -->
-  <script src="forecast.js"></script>
-  <script src="surf-forecast-links.js"></script>
-  <script src="app.js"></script>
+  <script src="landing.js"></script>
 </body>
 </html>

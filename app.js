@@ -569,13 +569,91 @@
         <div class="tt-sub">${t.itinSummary}</div>
         <ul class="sum">${it.summary.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
         <ol class="days">${it.days.map(day => `<li><b>${esc(day.title)}</b><ul>${day.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></li>`).join('')}</ol>
+        <section class="tv" id="tvBox" aria-label="${esc(t.tvTitle)}"></section>
         <div class="tt-sub">${t.itinNext}</div>
         <ul class="sum">${t.itinNextList.map(s => `<li>${s}</li>`).join('')}</ul>
         <div class="res-actions"><button class="btn primary" data-guide>${t.requestQuote}</button></div>`;
       content.querySelector('[data-guide]').onclick = () => toast(t.guideToast);
+      plan = { id, travellers: TV.defaultTravellers(state.tripType), maxNight: null, live: null, liveKey: '' };
+      renderTravel();
     }, 900);
   }
-  const closeModal = () => { modal.hidden = true; };
+
+  /* ---------------- FLIGHTS & STAYS (inside the plan modal) ----------------
+   * No live prices: prefilled searches on Google Flights / Skyscanner / Kayak and Booking.com / Airbnb,
+   * a transparent stay budget (editable), and lodging categories. See travel.js for the link formats
+   * and the LIVE OFFERS PLUG-IN POINT (window.TASF_CONFIG.offersEndpoint → server/offers-proxy.example.mjs). */
+  const TV = window.TASF_TRAVEL;
+  let plan = null;
+  const fmtDate = s => new Date(s + 'T12:00:00').toLocaleDateString(t.locale, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const extA = (href, label, cls = 'btn ghost sm') => `<a class="${cls}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
+  function renderTravel() {
+    const box = $('#tvBox'); if (!box || !plan) return;
+    const d = DESTS.find(x => x.id === plan.id), ev = evals.get(plan.id), o = originObj();
+    const win = TV.tripWindow(d, ev, state);
+    const sb = TV.stayBudget(d, state, o, win, plan.travellers);
+    const maxNight = plan.maxNight != null ? plan.maxNight : (sb.ok ? sb.groupNight : 0);
+    const dest = d.airports[0], same = d.airports.includes(o.iata) || d.airports.includes(o.id);
+    const fl = TV.flightLinks(o, dest, win, plan.travellers, state.lang);
+    const st = TV.stayLinks(d, win, plan.travellers, maxNight, state.lang);
+    const types = TV.lodgingTypes(d, state, sb);
+    const dates = win.mode === 'fixed' ? t.tvDatesFixed(fmtDate(win.start), fmtDate(win.end), win.nights) : t.tvDatesSuggested(fmtDate(win.start), fmtDate(win.end), win.nights, t.monthsLong[win.month]);
+    const stops = TV.stopsCode(sb.km);
+    const alt = d.airports.slice(1);
+    const altLinks = alt.map(a => { const l = TV.flightLinks(o, a, win, plan.travellers, state.lang); return `<a href="${esc(l.google)}" target="_blank" rel="noopener noreferrer">${a}</a>`; }).join(', ');
+    box.innerHTML = `<h3 class="tv-h">${t.tvTitle}</h3>
+      <div class="demo-flag tv-flag" role="note">${t.tvNotLive}</div>
+      <div class="tv-ctrl">
+        <label>${t.tvFrom}<select id="tvOrigin">${ORIGINS.map(x => `<option value="${x.id}" ${x.id === state.origin ? 'selected' : ''}>${esc(x.name)} (${x.iata})</option>`).join('')}</select></label>
+        <label>${t.tvTravellers}<input type="number" id="tvPax" min="1" max="12" step="1" value="${plan.travellers}" inputmode="numeric"></label>
+      </div>
+      <p class="tv-dates">${esc(dates)}</p>
+      <div class="tv-block">
+        <div class="tt-sub">✈ ${t.tvFlights}</div>
+        <div class="kv"><span>${t.tvAirport}</span><b>${esc(t.tvRoute(o.iata, dest))}</b></div>
+        ${alt.length ? `<div class="kv"><span>${t.tvAirportAlt}</span><b class="kv-small">${altLinks}</b></div>` : ''}
+        <p class="tv-note">${same ? t.tvSameAirport : stops === 'none' ? t.tvNoFlight : esc(t.tvFlightEst(Math.max(1, Math.round(sb.km / 800 + (sb.km > 3500 ? 2.5 : 0.7))), t.tvStops[stops]))}</p>
+        ${same ? '' : `<div class="tv-links"><span>${t.tvSearchOn}</span>${extA(fl.google, 'Google Flights ↗')}${extA(fl.skyscanner, 'Skyscanner ↗')}${extA(fl.kayak, 'Kayak ↗')}</div>`}
+      </div>
+      <div class="tv-block">
+        <div class="tt-sub">⌂ ${t.tvStays}</div>
+        <div class="kv"><span>${t.tvArea}</span><b>${esc(d.stay)}</b></div>
+        <details class="tv-how"${sb.ok ? '' : ' open'}><summary>${t.tvBudgetHow}</summary>
+          <ul class="sum">${t.tvBudgetLines(sb).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+          ${sb.ok ? '' : `<p class="tv-note warn">${t.tvBudgetLow}</p>`}
+        </details>
+        <label class="tv-max">${t.tvMaxNight}<input type="number" id="tvMax" min="0" step="5" value="${maxNight || ''}" inputmode="numeric"></label>
+        ${sb.ok ? `<p class="tv-note">${esc(t.tvMaxHint(sb.groupNight))}</p>` : ''}
+        <div class="tv-links"><span>${t.tvSearchOn}</span>${extA(st.booking, 'Booking.com ↗')}${extA(st.airbnb, 'Airbnb ↗')}</div>
+        <div class="tt-sub">${t.tvTypes}</div>
+        <ul class="tv-types">${types.map(k => `<li>${esc(t.tvType[k])}</li>`).join('')}</ul>
+        <div class="tv-links small">${types.includes('camp') ? extA(st.camps, t.tvFindCamps, 'link') : ''}${types.includes('hostel') ? extA(st.hostels, t.tvFindHostels, 'link') : ''}${types.includes('charter') ? extA(st.charter, t.tvFindCharter, 'link') : ''}</div>
+        <p class="tv-note">${t.tvTypesNote}</p>
+      </div>
+      <div id="tvLive"></div>`;
+    $('#tvOrigin').onchange = e => { state.origin = e.target.value; plan.maxNight = null; update(); renderTravel(); };
+    $('#tvPax').onchange = e => { plan.travellers = Math.max(1, Math.min(12, Math.round(+e.target.value) || 1)); plan.maxNight = null; renderTravel(); };
+    $('#tvMax').onchange = e => { const v = Math.round(+e.target.value); plan.maxNight = v > 0 ? v : 0; renderTravel(); };
+    // LIVE OFFERS PLUG-IN POINT: only runs when window.TASF_CONFIG.offersEndpoint is set (not in this prototype).
+    if (CFG.offersEndpoint) {
+      const req = TV.liveRequest(d, o, win, plan.travellers, maxNight), key = JSON.stringify(req);
+      if (plan.liveKey === key && plan.live) return renderLive(plan.live);
+      plan.liveKey = key; $('#tvLive').innerHTML = `<div class="thinking"><span></span><span></span><span></span></div>`;
+      TV.fetchLiveOffers(req, CFG).then(j => { if (plan && plan.liveKey === key) { plan.live = j; renderLive(j); } })
+        .catch(() => { if (plan && plan.liveKey === key) $('#tvLive').innerHTML = `<p class="tv-note warn">${t.tvLiveErr}</p>`; });
+    }
+  }
+  /** Renders ONLY what the live endpoint returned (names, flight numbers, prices come from the API). */
+  function renderLive(j) {
+    const n = $('#tvLive'); if (!n || !j) return;
+    const eur = v => v == null ? '—' : `€${Math.round(+v).toLocaleString()}`;
+    const leg = l => l ? `${esc(l.depart || '')} → ${esc(l.arrive || '')} · ${t.tvStopsN(+l.stops || 0)}` : '';
+    n.innerHTML = `<div class="tv-block live"><div class="tt-sub">${esc(t.tvLive(j.source, fmtUpdated(j.fetchedAt)))}</div>
+      ${(j.flights || []).length ? `<b>${t.tvLiveFlights}</b><ul class="tv-offers">${j.flights.slice(0, 5).map(f => `<li><span>${esc((f.carriers || []).join(', '))} ${esc((f.flightNumbers || []).join(' / '))}<small>${leg(f.outbound)}${f.inbound ? '<br>' + leg(f.inbound) : ''}</small></span><b>${eur(f.totalPrice)} <small>${t.tvTotal}</small></b>${f.url ? extA(f.url, '↗', 'link') : ''}</li>`).join('')}</ul>` : ''}
+      ${(j.stays || []).length ? `<b>${t.tvLiveStays}</b><ul class="tv-offers">${j.stays.slice(0, 5).map(h => `<li><span>${esc(h.name || '')}${h.rating ? ` <small>★ ${esc(h.rating)}</small>` : ''}</span><b>${eur(h.pricePerNight)} <small>${t.tvPerNight}</small></b>${h.url ? extA(h.url, '↗', 'link') : ''}</li>`).join('')}</ul>` : ''}
+    </div>`;
+  }
+  const closeModal = () => { modal.hidden = true; plan = null; };
   $('#modalClose').onclick = closeModal;
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeCard(); } });
@@ -593,6 +671,7 @@
     document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
     setLegend(!legend.classList.contains('collapsed'));
     renderAll();
+    if (plan && !modal.hidden) openPlan(plan.id);
   }
   document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.lang));
 
@@ -617,7 +696,7 @@
   setLang(state.lang);
   // Over http(s): pick up a newer forecast.json (file:// usually blocks fetch → forecast.js is used).
   if (/^https?:$/.test(location.protocol) && window.fetch) {
-    fetch('forecast.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(doc => {
+    fetch((document.documentElement.dataset.root || '') + 'forecast.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(doc => {
       if (validFc(doc) && (!FC || Date.parse(doc.generatedAt) > Date.parse(FC.generatedAt))) { FC = doc; renderAll(); }
     }).catch(() => { /* keep forecast.js data or the unavailable state */ });
   }
@@ -628,5 +707,5 @@
     map.invalidateSize({ animate: false }); updateSize();
     if (state.step === 5) fitResults(false); else applyView();
   }, 120); }).observe(mapWrap);
-  window.TASF_APP = { state, evals: () => evals, ranking: () => ranking, top: () => topMatches(), go, forecast: () => FC, fcStatus, selectDest, setLang, fitResults, map, view: () => ({ k: map.getZoom(), center: map.getCenter(), W, H }), tiles: () => ({ ok: tileOk, err: tileErr, fallback: !!fallback }), markerPos: () => Object.fromEntries(Object.entries(markers).map(([k, g]) => [k, g.getBoundingClientRect()])) };
+  window.TASF_APP = { state, openPlan, plan: () => plan, evals: () => evals, ranking: () => ranking, top: () => topMatches(), go, forecast: () => FC, fcStatus, selectDest, setLang, fitResults, map, view: () => ({ k: map.getZoom(), center: map.getCenter(), W, H }), tiles: () => ({ ok: tileOk, err: tileErr, fallback: !!fallback }), markerPos: () => Object.fromEntries(Object.entries(markers).map(([k, g]) => [k, g.getBoundingClientRect()])) };
 })();

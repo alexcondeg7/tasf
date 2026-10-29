@@ -267,5 +267,5 @@
     return { title: t.itinTitle(displayName(d, lang)), summary: T.sum(months, days, LEVEL_CODES[L - 1], cost), days: out };
   }
 
-  root.TASF_PLANNER = { LV, LEVEL_CODES, levelFit, forecastWindow, evaluate, rankAll, diversify, displayName, generateItinerary, monthWeights, tripDays, estimateCost, distKm, seasonFor };
+  root.TASF_PLANNER = { LV, LEVEL_CODES, levelFit, forecastWindow, evaluate, rankAll, diversify, displayName, generateItinerary, monthWeights, tripDays, estimateCost, distKm, seasonFor, flightCost, flightHours };
 })(typeof window !== 'undefined' ? window : globalThis);

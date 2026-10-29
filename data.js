@@ -883,16 +883,95 @@
   D.forEach(d => { d.contest = CONTEST[d.id] || null; });
   window.TASF_DESTINATIONS = D;
 
-  // Origin airports for rough flight estimate (great-circle based, very approximate)
+  /* ---------- AIRPORTS + STAY AREA (used by the "Plan my trip" flights & stays section) ----------
+   * airports: IATA codes of the nearest airport(s) with scheduled commercial flights, most useful first.
+   *           The first one is used for the prefilled Google Flights / Skyscanner / Kayak searches; the
+   *           others are shown as alternatives (often the international hub before a domestic hop).
+   *           Codes checked against general airport knowledge on 2026-10-29 (e.g. LIS Lisbon, FAO Faro,
+   *           BIO Bilbao, BIQ Biarritz, DPS Bali, PXM Puerto Escondido, LIR Liberia, IAO Siargao).
+   * stay:     town / area used as the place name for the Booking.com and Airbnb searches (a place,
+   *           never a property). Travel notes in each destination already explain the transfer. */
+  const TRAVEL = {
+    peniche: [['LIS'], 'Peniche, Portugal'],
+    nazare: [['LIS', 'OPO'], 'Nazaré, Portugal'],
+    algarve_west: [['FAO', 'LIS'], 'Aljezur, Portugal'],
+    algarve_south: [['FAO'], 'Lagos, Portugal'],
+    basque: [['BIO', 'EAS'], 'Mundaka, Spain'],
+    hossegor: [['BIQ', 'BOD'], 'Hossegor, France'],
+    canaries: [['FUE', 'ACE'], 'Corralejo, Fuerteventura, Spain'],
+    cornwall: [['NQY', 'EXT'], 'Newquay, United Kingdom'],
+    ireland: [['NOC', 'DUB'], 'Bundoran, Ireland'],
+    clare: [['SNN'], 'Lahinch, Ireland'],
+    scotland: [['INV', 'EDI'], 'Thurso, United Kingdom'],
+    iceland: [['KEF'], 'Reykjavik, Iceland'],
+    morocco: [['AGA'], 'Taghazout, Morocco'],
+    dakar_north: [['DSS'], 'Ngor, Dakar, Senegal'],
+    dakar_south: [['DSS'], 'Dakar, Senegal'],
+    namibia: [['WVB'], 'Walvis Bay, Namibia'],
+    jbay: [['PLZ'], 'Jeffreys Bay, South Africa'],
+    mozambique: [['INH', 'MPM'], 'Tofo, Mozambique'],
+    maldives_male: [['MLE'], 'Thulusdhoo, Maldives'],
+    maldives_south: [['MLE', 'KDO'], 'Gaafu Dhaalu Atoll, Maldives'],
+    srilanka_s: [['CMB'], 'Weligama, Sri Lanka'],
+    arugam: [['CMB'], 'Arugam Bay, Sri Lanka'],
+    bali_bukit: [['DPS'], 'Uluwatu, Bali, Indonesia'],
+    bali_east: [['DPS'], 'Sanur, Bali, Indonesia'],
+    gland: [['DPS', 'BWX'], 'Banyuwangi, Indonesia'],
+    lombok: [['LOP', 'DPS'], 'Kuta, Lombok, Indonesia'],
+    sumbawa: [['BMU', 'LOP', 'DPS'], 'Hu\'u, Dompu, Indonesia'],
+    mentawai: [['PDG'], 'Mentawai Islands, Indonesia'],
+    siargao: [['IAO', 'MNL', 'CEB'], 'General Luna, Siargao, Philippines'],
+    japan: [['NRT', 'HND'], 'Ichinomiya, Chiba, Japan'],
+    goldcoast: [['OOL', 'BNE'], 'Coolangatta, Australia'],
+    margaret: [['PER'], 'Margaret River, Australia'],
+    raglan: [['AKL'], 'Raglan, New Zealand'],
+    fiji_mamanuca: [['NAN'], 'Mamanuca Islands, Fiji'],
+    fiji_coral: [['NAN', 'SUV'], 'Pacific Harbour, Fiji'],
+    tahiti: [['PPT'], 'Teahupoo, French Polynesia'],
+    northshore: [['HNL'], 'Haleiwa, Hawaii, United States'],
+    waikiki: [['HNL'], 'Waikiki, Honolulu, Hawaii, United States'],
+    jaws: [['OGG'], 'Paia, Maui, Hawaii, United States'],
+    maui: [['OGG'], 'Kapalua, Maui, Hawaii, United States'],
+    norcal: [['SJC', 'SFO'], 'Santa Cruz, California, United States'],
+    sandiego: [['SAN'], 'La Jolla, California, United States'],
+    trestles: [['SNA', 'LAX'], 'San Clemente, California, United States'],
+    puertoescondido: [['PXM', 'OAX'], 'Puerto Escondido, Oaxaca, Mexico'],
+    sayulita: [['PVR'], 'Sayulita, Mexico'],
+    rincon: [['BQN', 'SJU'], 'Rincón, Puerto Rico'],
+    barbados: [['BGI'], 'Bathsheba, Barbados'],
+    costarica: [['LIR', 'SJO'], 'Santa Teresa, Costa Rica'],
+    nicaragua: [['MGA', 'LIR'], 'Popoyo, Nicaragua'],
+    elsalvador: [['SAL'], 'El Tunco, El Salvador'],
+    peru: [['TRU', 'TYL', 'LIM'], 'Puerto Chicama, Peru'],
+    chile: [['SCL'], 'Pichilemu, Chile'],
+    brazil: [['FLN'], 'Florianópolis, Brazil']
+  };
+  D.forEach(d => { const x = TRAVEL[d.id]; d.airports = x ? x[0] : []; d.stay = x ? x[1] : d.name; });
+
+  /* Departure cities (default Madrid). id = code used in the app state (kept from the earlier version),
+   * iata = airport or IATA city/metropolitan code for Google Flights and Kayak (LON, PAR, NYC, SAO = all
+   * airports of that city), sky = the code Skyscanner uses in its /transport/flights/ URLs (its metro codes
+   * are lond / pari / nyca; for São Paulo, GRU is used), lat/lon = main airport, for the rough distance-based
+   * flight estimates. */
   window.TASF_ORIGINS = [
-    { id: 'MAD', name: 'Madrid', lat: 40.47, lon: -3.56 },
-    { id: 'BCN', name: 'Barcelona', lat: 41.3, lon: 2.08 },
-    { id: 'LON', name: 'London', lat: 51.47, lon: -0.45 },
-    { id: 'NYC', name: 'New York', lat: 40.64, lon: -73.78 },
-    { id: 'LAX', name: 'Los Angeles', lat: 33.94, lon: -118.4 },
-    { id: 'MEX', name: 'Mexico City', lat: 19.43, lon: -99.07 },
-    { id: 'SAO', name: 'São Paulo', lat: -23.43, lon: -46.47 },
-    { id: 'SYD', name: 'Sydney', lat: -33.94, lon: 151.18 }
+    { id: 'MAD', iata: 'MAD', sky: 'mad', name: 'Madrid', lat: 40.47, lon: -3.56 },
+    { id: 'BCN', iata: 'BCN', sky: 'bcn', name: 'Barcelona', lat: 41.3, lon: 2.08 },
+    { id: 'BIO', iata: 'BIO', sky: 'bio', name: 'Bilbao', lat: 43.3, lon: -2.91 },
+    { id: 'VLC', iata: 'VLC', sky: 'vlc', name: 'Valencia', lat: 39.49, lon: -0.48 },
+    { id: 'SVQ', iata: 'SVQ', sky: 'svq', name: 'Sevilla', lat: 37.42, lon: -5.9 },
+    { id: 'AGP', iata: 'AGP', sky: 'agp', name: 'Málaga', lat: 36.67, lon: -4.5 },
+    { id: 'LIS', iata: 'LIS', sky: 'lis', name: 'Lisboa / Lisbon', lat: 38.77, lon: -9.13 },
+    { id: 'OPO', iata: 'OPO', sky: 'opo', name: 'Porto', lat: 41.24, lon: -8.68 },
+    { id: 'LON', iata: 'LON', sky: 'lond', name: 'London', lat: 51.47, lon: -0.45 },
+    { id: 'PAR', iata: 'PAR', sky: 'pari', name: 'Paris', lat: 49.01, lon: 2.55 },
+    { id: 'BER', iata: 'BER', sky: 'ber', name: 'Berlin', lat: 52.36, lon: 13.5 },
+    { id: 'AMS', iata: 'AMS', sky: 'ams', name: 'Amsterdam', lat: 52.31, lon: 4.76 },
+    { id: 'DUB', iata: 'DUB', sky: 'dub', name: 'Dublin', lat: 53.42, lon: -6.27 },
+    { id: 'NYC', iata: 'NYC', sky: 'nyca', name: 'New York', lat: 40.64, lon: -73.78 },
+    { id: 'LAX', iata: 'LAX', sky: 'lax', name: 'Los Angeles', lat: 33.94, lon: -118.4 },
+    { id: 'MEX', iata: 'MEX', sky: 'mex', name: 'Mexico City', lat: 19.43, lon: -99.07 },
+    { id: 'SAO', iata: 'SAO', sky: 'gru', name: 'São Paulo', lat: -23.43, lon: -46.47 },
+    { id: 'SYD', iata: 'SYD', sky: 'syd', name: 'Sydney', lat: -33.94, lon: 151.18 }
   ];
 
   // Rough on-the-ground cost per person per WEEK (EUR) by cost tier — placeholder bands
