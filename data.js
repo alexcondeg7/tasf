@@ -497,7 +497,8 @@
           "confidence": "medium",
           "sources": [
               "https://www.surfsiargao.com/surf-articles/2024/3/11/fat-lips-guide-to-surfing-by-season-in-siargao",
-              "https://surf-map.com/guides/siargao/cloud-9/"
+              "https://surf-map.com/guides/siargao/cloud-9/",
+              "https://www.instagram.com/p/DfDdIXAk5MG/ (Surfline, Oct 2026: WSL CT at Cloud 9, Philippines Pro 31 Oct-10 Nov)"
           ],
           "needsValidation": "Typhoon swell is year-to-year variable; Dec-Feb NE monsoon is messy.",
           "validationNote": "Peak moved: Sep 3->1 (local shop: \"September is NOT peak\"), Oct-Nov stay 3, Dec 3->1 (windy winter), Mar-May 1->2 (second season). Beginner curve now peaks in summer (waist-high)."
@@ -868,8 +869,8 @@
           "es": "Circuito mundial WSL (CT) 2026: Trestles Pro, Lower Trestles (sep)"
       },
       "siargao": {
-          "en": "WSL Championship Tour 2026: Philippines Pro, Cloud 9 (Oct–Nov)",
-          "es": "Circuito mundial WSL (CT) 2026: Philippines Pro, Cloud 9 (oct–nov)"
+          "en": "WSL Championship Tour 2026: Philippines Pro, Cloud 9, 31 Oct–10 Nov 2026 (first time the CT surfs Cloud 9)",
+          "es": "Circuito mundial WSL (CT) 2026: Philippines Pro, Cloud 9, 31 oct–10 nov 2026 (primera vez que el CT compite en Cloud 9)"
       },
       "northshore": {
           "en": "WSL Championship Tour 2026: Pipe Masters, Pipeline (Dec) — season finale",
